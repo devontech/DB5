@@ -18,4 +18,7 @@
 
 - (VSTheme *)themeNamed:(NSString *)themeName;
 
+- (void)loadThemesFromDictionary:(NSDictionary *)themesDictionary;		// Loads all themes new from given dictionary
+- (void)loadThemeWithURL:(NSURL *)url;									// Loads all themes new from file URL (e.g. from a plist in /Documents)
+
 @end

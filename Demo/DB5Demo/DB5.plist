@@ -23,10 +23,5 @@
 		<key>labelAnimationCurve</key>
 		<string>easeout</string>
 	</dict>
-	<key>Example Theme</key>
-	<dict>
-		<key>test</key>
-		<string>foo</string>
-	</dict>
 </dict>
 </plist>

@@ -20,39 +20,52 @@
 @implementation VSThemeLoader
 
 
-- (id)init {
-	
+- (id)init
+{
 	self = [super init];
 	if (self == nil)
 		return nil;
 	
 	NSString *themesFilePath = [[NSBundle mainBundle] pathForResource:@"DB5" ofType:@"plist"];
 	NSDictionary *themesDictionary = [NSDictionary dictionaryWithContentsOfFile:themesFilePath];
+	[self loadThemesFromDictionary:themesDictionary];
 	
+	return self;
+}
+
+- (void)loadThemeWithURL:(NSURL *)url
+{
+	NSDictionary *themesDictionary = [NSDictionary dictionaryWithContentsOfURL:url];
+	if (themesDictionary)
+		[self loadThemesFromDictionary:themesDictionary];
+}
+
+- (void)loadThemesFromDictionary:(NSDictionary *)themesDictionary
+{
 	NSMutableArray *themes = [NSMutableArray array];
-	for (NSString *oneKey in themesDictionary) {
-		
+	for (NSString *oneKey in themesDictionary)
+	{
 		VSTheme *theme = [[VSTheme alloc] initWithDictionary:themesDictionary[oneKey]];
 		if ([[oneKey lowercaseString] isEqualToString:@"default"])
 			_defaultTheme = theme;
 		theme.name = oneKey;
 		[themes addObject:theme];
 	}
-
+	
     for (VSTheme *oneTheme in themes) { /*All themes inherit from the default theme.*/
 		if (oneTheme != _defaultTheme)
 			oneTheme.parentTheme = _defaultTheme;
     }
     
 	_themes = themes;
-	
-	return self;
 }
 
+#pragma mark - Properties
 
-- (VSTheme *)themeNamed:(NSString *)themeName {
-
-	for (VSTheme *oneTheme in self.themes) {
+- (VSTheme *)themeNamed:(NSString *)themeName
+{
+	for (VSTheme *oneTheme in self.themes)
+	{
 		if ([themeName isEqualToString:oneTheme.name])
 			return oneTheme;
 	}
