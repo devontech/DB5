@@ -26,18 +26,43 @@
 	if (self == nil)
 		return nil;
 	
-	NSString *themesFilePath = [[NSBundle mainBundle] pathForResource:@"DB5" ofType:@"plist"];
+	NSString *themesFilePath = [self defaultThemePath];
 	NSDictionary *themesDictionary = [NSDictionary dictionaryWithContentsOfFile:themesFilePath];
 	[self loadThemesFromDictionary:themesDictionary];
 	
 	return self;
 }
 
+- (NSString *)defaultThemePath
+{
+	return [[NSBundle mainBundle] pathForResource:@"DB5" ofType:@"plist"];
+}
+
+- (void)copyDefaultThemeToURL:(NSURL *)url
+{
+	if (url.isFileURL)
+	{
+		NSString *themesFilePath = [self defaultThemePath];
+		if (![[NSFileManager defaultManager] fileExistsAtPath:url.path isDirectory:NULL])
+			[[NSFileManager defaultManager] copyItemAtPath:themesFilePath toPath:url.path error:nil];
+	}
+}
+
 - (void)loadThemeWithURL:(NSURL *)url
 {
-	NSDictionary *themesDictionary = [NSDictionary dictionaryWithContentsOfURL:url];
-	if (themesDictionary)
-		[self loadThemesFromDictionary:themesDictionary];
+	// Find out if default DB5.plist or the one pointed to by the URL is newer
+	NSFileManager *defaultFileManager = [NSFileManager defaultManager];
+	NSDictionary *attributesDefault = [defaultFileManager attributesOfItemAtPath:[self defaultThemePath] error:nil];
+	NSDictionary *attributesToLoad = [defaultFileManager attributesOfItemAtPath:url.path error:nil];
+	NSDate *modificationDateDefault = [attributesDefault objectForKey:NSFileModificationDate];
+	NSDate *modificationDateToLoad = [attributesToLoad objectForKey:NSFileModificationDate];
+	
+	if ([modificationDateDefault timeIntervalSinceDate:modificationDateToLoad] < 0)
+	{
+		NSDictionary *themesDictionary = [NSDictionary dictionaryWithContentsOfURL:url];
+		if (themesDictionary)
+			[self loadThemesFromDictionary:themesDictionary];
+	}
 }
 
 - (void)loadThemesFromDictionary:(NSDictionary *)themesDictionary
