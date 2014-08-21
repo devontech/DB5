@@ -186,6 +186,12 @@ static UIColor *colorWithHexString(NSString *hexString);
 	return size;
 }
 
+- (CGRect)rectForKey:(NSString *)key
+{
+	CGPoint origin = [self pointForKey:key];
+	CGSize size = [self sizeForKey:key];
+	return CGRectMake(origin.x, origin.y, size.width, size.height);
+}
 
 - (UIViewAnimationOptions)curveForKey:(NSString *)key {
     
